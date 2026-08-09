@@ -73,28 +73,21 @@ Only one row is used in the `robot_state` table, and each new command updates th
  Creates and initializes the database table
 
 ---
-
 ## 🖼️ Screenshots
 
 ### 🎮 Control Panel
-
-![Control Panel](images/control-panel.png)
+![Control Panel](control-panel.png)
 
 ### 🎤 Voice Control
-
-![Voice Control](images/voice-control.png)
+![Voice Control](voice-control.png)
 
 ### 🗄️ Database
-
-
-![Database State](images/database-state.png)
+![Database](database-state.png)
 
 ---
+## 🎥 Demo Video
 
-## 🎥 Demo
-The demo video shows the control panel, database updates, and voice commands working together.
-
-🎬 **Demo Video:** `demo/demo-video.mp4`
+[▶️ Watch the Demo Video]([رابط-الدرايف-هنا](https://drive.google.com/file/d/1RehRVgaXw_BGaRWwcL77Wo2f2SG2ar1x/view?usp=sharing)
 
 ---
 
