@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Control Pad</title>
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .control-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(3, 70px);
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
+    direction: ltr;
+  }
+
+  .btn {
+    width: 100%;
+    height: 100%;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+  }
+
+  .btn:hover {
+    background: #f5f5f5;
+  }
+
+  .btn.stop {
+    border-color: red;
+  }
+
+  .forward  { grid-column: 2; grid-row: 1; }
+  .left     { grid-column: 1; grid-row: 2; }
+  .stop     { grid-column: 2; grid-row: 2; }
+  .right    { grid-column: 3; grid-row: 2; }
+  .backward { grid-column: 2; grid-row: 3; }
+
+  #status {
+    margin-top: 25px;
+    font-size: 16px;
+    color: #444;
+  }
+
+  #voiceBtn{
+    width:180px;
+    height:55px;
+    margin-top:20px;
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="control-pad">
+    <button class="btn forward" onclick="sendCommand('forward')">Forward</button>
+    <button class="btn left" onclick="sendCommand('left')">Left</button>
+    <button class="btn stop" onclick="sendCommand('stop')">Stop</button>
+    <button class="btn right" onclick="sendCommand('right')">Right</button>
+    <button class="btn backward" onclick="sendCommand('backward')">Backward</button>
+</div>
+
+<div id="status">Ready</div>
+
+<button class="btn" id="voiceBtn">
+🎤 Voice Control
+</button>
+
+<script>
+
+function sendCommand(cmd){
+
+    document.getElementById("status").innerText="Sending...";
+
+    fetch("update_command.php",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"command="+encodeURIComponent(cmd)
+
+    })
+
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        if(data.status==="success"){
+
+            document.getElementById("status").innerText=
+            "Command Sent : "+data.button+
+            ' → "'+data.stored_as+'"';
+
+        }else{
+
+            document.getElementById("status").innerText=
+            "Error : "+data.message;
+
+        }
+
+    })
+
+    .catch(()=>{
+
+        document.getElementById("status").innerText=
+        "Server Connection Failed";
+
+    });
+
+}
+
+
+
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang="en-US";
+    recognition.continuous=false;
+    recognition.interimResults=false;
+
+    document.getElementById("voiceBtn").onclick=function(){
+
+        document.getElementById("status").innerText=
+        "🎤 Listening...";
+
+        recognition.start();
+
+    };
+
+    recognition.onresult=function(event){
+
+        let text=event.results[0][0].transcript
+        .toLowerCase()
+        .trim();
+
+        document.getElementById("status").innerText=
+        "You said : "+text;
+
+        if(text==="forward")
+            sendCommand("forward");
+
+        else if(text==="backward")
+            sendCommand("backward");
+
+        else if(text==="left")
+            sendCommand("left");
+
+        else if(text==="right")
+            sendCommand("right");
+
+        else if(text==="stop")
+            sendCommand("stop");
+
+        else
+            document.getElementById("status").innerText=
+            "Unknown Command : "+text;
+
+    };
+
+    recognition.onerror=function(){
+
+        document.getElementById("status").innerText=
+        "Voice Recognition Failed";
+
+    };
+
+}else{
+
+    document.getElementById("voiceBtn").disabled=true;
+
+    document.getElementById("status").innerText=
+    "Speech Recognition Not Supported";
+
+}
+
+</script>
+
+</body>
+</html>
